@@ -27,6 +27,18 @@ const v2UserSchema = new mongoose.Schema(
 //   return compareSync(password, this.password);
 // };
 
-const v2User = mongoose.model("v2User", v2UserSchema);
+const v2KamusSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    reference: [{ refName: { type: String }, refLink: { type: String } }],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-export { v2User };
+const v2User = mongoose.model("v2User", v2UserSchema);
+const v2Kamus = mongoose.model("v2Kamus", v2KamusSchema);
+
+export { v2User, v2Kamus };

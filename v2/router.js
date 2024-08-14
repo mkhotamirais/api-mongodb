@@ -3,7 +3,13 @@ const router = express.Router();
 import { getUsers, getUserById, deleteUser, updateUser } from "./v2-user-controller.js";
 import { deleteMe, getMe, signin, signout, signup, updateMe } from "./v2-auth-controller.js";
 import { isAdmin, isLogin } from "./middleware.js";
+import { deleteKamus, getKamus, getKamusById, postKamus, updateKamus } from "./v2-kamus-controller.js";
 
+// kamus
+router.route("/v2-kamus").get(getKamus).post(postKamus);
+router.route("/v2-kamus/:id").patch(updateKamus).delete(deleteKamus).get(getKamusById);
+
+// user and auth
 router.post("/v2-signup", signup);
 router.patch("/v2-signin", signin);
 
