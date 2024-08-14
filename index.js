@@ -6,6 +6,7 @@ import { credentials } from "./utils/middleware.js";
 import { allowedOrigins } from "./config/origins.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,7 @@ const corsOptions = {
 
 app.use(credentials);
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -53,6 +53,7 @@ export const deleteUser = async (req, res) => {
   try {
     const existingUser = await v2User.findById(id);
     if (!existingUser) return res.status(400).json({ error: `User id ${id} not found` });
+    if (existingUser.role === "admin") return res.status(400).json({ error: `Admin role cannot be deleted!` });
     await v2User.findByIdAndDelete(id);
     res.status(200).json({ message: `Delete ${existingUser.name} success` });
   } catch (error) {

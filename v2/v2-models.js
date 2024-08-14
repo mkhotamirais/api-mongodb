@@ -10,7 +10,7 @@ const v2UserSchema = new mongoose.Schema(
     // cart: { type: Array, default: [] },
     // address: [{ type: ObjectId, ref: "v1address" }],
     // wishlist: [{ type: ObjectId, ref: "v1product" }],
-    accessToken: String,
+    accessToken: [String],
   },
   {
     timestamps: true,
