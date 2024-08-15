@@ -1,5 +1,5 @@
 import { compare, genSalt, hash } from "bcrypt";
-import { v2User } from "./v2-models.js";
+import { Users } from "./models.js";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 
@@ -8,24 +8,24 @@ const ats = process.env.ACCESS_TOKEN_SECRET;
 export const signup = async (req, res) => {
   const { name, email, password, confPassword, role } = req.body;
   try {
-    if (!name) return res.status(400).json({ error: "name required" });
-    if (!email) return res.status(400).json({ error: "email required" });
-    if (!password) return res.status(400).json({ error: "password required" });
+    if (!name) return res.status(400).json({ error: "Name is required!" });
+    if (!email) return res.status(400).json({ error: "Email is required!" });
+    if (!password) return res.status(400).json({ error: "Password is required!" });
 
-    const dupName = await v2User.findOne({ name });
-    const dupEmail = await v2User.findOne({ email });
-    if (dupName) return res.status(409).json({ error: "duplicate name" });
-    if (dupEmail) return res.status(409).json({ error: "duplicate email" });
-    if (!validator.isEmail(email)) return res.status(400).json({ error: "email invalid" });
+    const dupName = await Users.findOne({ name });
+    const dupEmail = await Users.findOne({ email });
+    if (dupName) return res.status(409).json({ error: "Duplicate name!" });
+    if (dupEmail) return res.status(409).json({ error: "Duplicate email!" });
+    if (!validator.isEmail(email)) return res.status(400).json({ error: "Email is invalid!" });
 
-    if (password !== confPassword) return res.status(400).json({ error: "confirm password error" });
+    if (password !== confPassword) return res.status(400).json({ error: "Wrong confirm password!" });
     const salt = await genSalt(10);
     const hashPass = await hash(password, salt);
     req.body.password = hashPass;
     if (role && role === "admin") req.body.role = "user";
 
-    const response = await v2User.create(req.body);
-    res.status(201).json({ message: `Register ${name} success`, response });
+    await Users.create(req.body);
+    res.status(201).json({ message: `Register ${name} success` });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -34,13 +34,13 @@ export const signup = async (req, res) => {
 export const signin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    if (!email) return res.status(400).json({ error: `email required` });
-    if (!password) return res.status(400).json({ error: `password required` });
+    if (!email) return res.status(400).json({ error: `Email is required!` });
+    if (!password) return res.status(400).json({ error: `Password is required!` });
 
-    const existingEmail = await v2User.findOne({ email });
-    if (!existingEmail) return res.status(400).json({ error: "wrong email" });
+    const existingEmail = await Users.findOne({ email });
+    if (!existingEmail) return res.status(400).json({ error: "Incorrect email!" });
     const matchPass = await compare(password, existingEmail.password);
-    if (!matchPass) return res.status(400).json({ error: "incorrect password" });
+    if (!matchPass) return res.status(400).json({ error: "Incorrect password!" });
 
     const { _id: id, name, role } = existingEmail;
     const accessToken = jwt.sign({ id, name, role }, ats, { expiresIn: "1d" });
@@ -53,11 +53,9 @@ export const signin = async (req, res) => {
       path: "/",
     });
 
-    const response = await v2User
-      .findOneAndUpdate({ email }, { $push: { accessToken } }, { new: true })
-      .select(["-__v", "-password"]);
+    await Users.findOneAndUpdate({ email }, { $push: { accessToken } }, { new: true }).select(["-__v", "-password"]);
 
-    res.status(200).json({ message: `Login ${email} success`, response });
+    res.status(200).json({ message: `Login ${email} success` });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -67,7 +65,7 @@ export const signin = async (req, res) => {
 export const signout = async (req, res) => {
   try {
     const accessToken = req.cookies.accessToken;
-    const existingDataToken = await v2User.findOne({ accessToken: { $in: accessToken } });
+    const existingDataToken = await Users.findOne({ accessToken: { $in: accessToken } });
     if (!existingDataToken) return res.status(403).json({ error: `forbidden, token invalid` });
     res.clearCookie(`accessToken`, accessToken, {
       secure: true,
@@ -77,7 +75,7 @@ export const signout = async (req, res) => {
       sameSite: "none",
       path: "/",
     });
-    await v2User.findByIdAndUpdate(existingDataToken._id, { $pull: { accessToken } }, { new: true });
+    await Users.findByIdAndUpdate(existingDataToken._id, { $pull: { accessToken } }, { new: true });
     res.status(200).json({ message: `Logout ${existingDataToken.name} success` });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -86,9 +84,11 @@ export const signout = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const existingDataToken = await v2User
-      .findOne({ accessToken: { $in: req.cookies.accessToken } })
-      .select(["-__v", "-password", "-accessToken"]);
+    const existingDataToken = await Users.findOne({ accessToken: { $in: req.cookies.accessToken } }).select([
+      "-__v",
+      "-password",
+      "-accessToken",
+    ]);
     if (!existingDataToken) return res.status(403).json({ error: `forbidden, accessToken tidak valid` });
     res.status(200).json(existingDataToken);
   } catch (error) {

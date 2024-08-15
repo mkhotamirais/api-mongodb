@@ -1,24 +1,26 @@
 import express from "express";
 const router = express.Router();
-import { getUsers, getUserById, deleteUser, updateUser } from "./v2-user-controller.js";
-import { deleteMe, getMe, signin, signout, signup, updateMe } from "./v2-auth-controller.js";
-import { isAdmin, isLogin } from "./middleware.js";
-import { deleteKamus, getKamus, getKamusById, postKamus, updateKamus } from "./v2-kamus-controller.js";
+import { deleteMe, getMe, signin, signout, signup, updateMe } from "./authController.js";
+import { createProduct, deleteProduct, readProductById, readProducts, updateProduct } from "./productController.js";
+import { deleteUser, readUserById, readUsers, updateUser } from "./userController.js";
+import { isAdmin, isLogin } from "./mw.js";
 
-// kamus
-router.route("/v2-kamus").get(getKamus).post(postKamus);
-router.route("/v2-kamus/:id").patch(updateKamus).delete(deleteKamus).get(getKamusById);
+// auth
+router.post("/signup", signup);
+router.patch("/signin", signin);
 
-// user and auth
-router.post("/v2-signup", signup);
-router.patch("/v2-signin", signin);
+// products
+router.route("/product").get(readProducts).post(createProduct);
+router.route("/product/:id").get(readProductById).patch(updateProduct).delete(deleteProduct);
 
+// me
 router.use(isLogin);
-router.route("/v2-me").get(getMe).patch(updateMe).delete(deleteMe);
-router.patch("/v2-signout", signout);
+router.route("/me").get(getMe).patch(updateMe).delete(deleteMe);
+router.patch("/signout", signout);
 
+// user
 router.use(isAdmin);
-router.route("/v2-user").get(getUsers);
-router.route("/v2-user/:id").get(getUserById).patch(updateUser).delete(deleteUser);
+router.route("/user").get(readUsers);
+router.route("/user/:id").get(readUserById).patch(updateUser).delete(deleteUser);
 
 export default router;
