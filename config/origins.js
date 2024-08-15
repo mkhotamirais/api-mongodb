@@ -6,4 +6,5 @@ export const allowedOrigins = [
   "http://localhost:5174",
   "https://tamivite.vercel.app",
   "https://tamiweb.vercel.app",
+  "https://tamimern.vercel.app",
 ];
