@@ -4,13 +4,15 @@ import "dotenv/config";
 import db from "./config/index.js";
 import path from "path";
 import { fileURLToPath } from "url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirName = path.dirname(fileURLToPath(import.meta.url));
 import cookieParser from "cookie-parser";
 import { corsOptions, credentials, logError, logSuccess } from "./mw.js";
 
 import v0Router from "./v0/router.js";
 import v1Router from "./v1/router.js";
 import v2Router from "./v2/router.js";
+import v3Router from "./v3/router.js";
+import v4Router from "./v4/router.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,7 +22,7 @@ app.use(logSuccess);
 app.use(credentials); // --- built-in middleware
 app.use(cors(corsOptions)); // mw for 'content-type: application/x-www-form-urlencoded' / form data
 app.use(express.json()); // mw for json
-app.use(express.static(path.join(__dirname, "public"))); // mw for serve static file (ex: public)
+app.use(express.static(path.join(dirName, "public"))); // mw for serve static file (ex: public)
 app.use(express.urlencoded({ extended: true })); // mw for cookies
 app.use(cookieParser()); // mw for cookiescookieParser());
 
@@ -29,17 +31,17 @@ app.get("/", (req, res) => {
 });
 
 // app.get("^/$|/index(.html)?", (req, res) => {
-//   // res.sendFile("./views/index.html", { root: __dirname });
-//   res.sendFile(path.join(__dirname, "views", "index.html"));
+//   // res.sendFile("./views/index.html", { root: dirName });
+//   res.sendFile(path.join(dirName, "views", "index.html"));
 // });
 // app.get("/newpage(.html)?", (req, res) => {
-//   res.sendFile(path.join(__dirname, "views", "new-page.html"));
+//   res.sendFile(path.join(dirName, "views", "new-page.html"));
 // });
 // app.get("/oldpage(.html)?", (req, res) => {
 //   res.redirect(301, "/newpage");
 // });
 // app.get("/subdir-page", (req, res) => {
-//   res.sendFile(path.join(__dirname, "views", "subdir", "index.html"));
+//   res.sendFile(path.join(dirName, "views", "subdir", "index.html"));
 // });
 
 // ------ route ------
@@ -47,6 +49,8 @@ app.get("/", (req, res) => {
 app.use("/v0", v0Router);
 app.use("/v1", v1Router);
 app.use("/v2", v2Router);
+app.use("/v3", v3Router);
+app.use("/v4", v4Router);
 
 // ------ route ------
 
@@ -74,7 +78,7 @@ app.use("/v2", v2Router);
 
 app.all("/*", (req, res) => {
   res.status(404);
-  if (req.accepts("html")) res.sendFile(path.join(__dirname, "views", "404.html"));
+  if (req.accepts("html")) res.sendFile(path.join(dirName, "views", "404.html"));
   else if (req.accepts("json")) res.json({ message: "404 Not Found" });
   else res.type("txt").send("404 Not Found");
 });

@@ -49,7 +49,7 @@ export const signin = async (req, res) => {
 
     const { _id: id, name, role } = existingEmail;
     const accessToken = jwt.sign({ id, name, role }, ats, { expiresIn: "1d" });
-    res.cookie("accessToken", accessToken, {
+    res.cookie("accessTokenV3", accessToken, {
       secure: true,
       httpOnly: true,
       // maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -70,10 +70,10 @@ export const signin = async (req, res) => {
 // token required
 export const signout = async (req, res) => {
   try {
-    const accessToken = req.cookies.accessToken;
+    const accessToken = req.cookies.accessTokenV3;
     const existingDataToken = await Users.findOne({ accessToken: { $in: accessToken } });
     if (!existingDataToken) return res.status(403).json({ error: `forbidden, token invalid` });
-    res.clearCookie(`accessToken`, accessToken, {
+    res.clearCookie(`accessTokenV3`, accessToken, {
       secure: true,
       httpOnly: true,
       // maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -91,7 +91,7 @@ export const signout = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const existingDataToken = await Users.findOne({ accessToken: { $in: req.cookies.accessToken } }).select([
+    const existingDataToken = await Users.findOne({ accessToken: { $in: req.cookies.accessTokenV3 } }).select([
       "-__v",
       "-password",
       "-accessToken",
@@ -107,7 +107,7 @@ export const getMe = async (req, res) => {
 export const updateMe = async (req, res) => {
   try {
     const existingDataToken = await Users.findOne({
-      accessToken: { $in: req.cookies.accessToken },
+      accessToken: { $in: req.cookies.accessTokenV3 },
     });
     if (!existingDataToken) return res.status(403).json({ error: `forbidden: token tidak valid` });
     if (existingDataToken.role !== "admin" && req.body.role === "admin")
@@ -134,7 +134,7 @@ export const updateMe = async (req, res) => {
 export const deleteMe = async (req, res) => {
   try {
     const existingDataToken = await Users.findOne({
-      accessToken: { $in: req.cookies.accessToken },
+      accessToken: { $in: req.cookies.accessTokenV3 },
     });
     if (!existingDataToken) return res.status(403).json({ error: `forbidden: token tidak valid` });
     if (existingDataToken.role === "admin")

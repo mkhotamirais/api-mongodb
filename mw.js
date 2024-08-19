@@ -1,9 +1,8 @@
 import { format } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
-import path from "path";
+import { existsSync, mkdirSync, appendFileSync } from "fs";
+import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import { allowedOrigins } from "./config/origins.js";
 
@@ -27,13 +26,16 @@ export const corsOptions = {
 
 export const logEvents = (message, fileName) => {
   const logItem = `${format(new Date(), "yyyyMMdd-HH:mm:ss")}\t${uuidv4()}\t${message}\n`;
+  const dirName = dirname(fileURLToPath(import.meta.url));
+
   try {
-    if (!fs.existsSync(path.join(__dirname, "logs"))) fs.mkdirSync(path.join(__dirname, "logs"));
-    fs.appendFileSync(path.join(__dirname, "logs", fileName), logItem);
+    if (!existsSync(join(dirName, "logs"))) mkdirSync(join(dirName, "logs"));
+    appendFileSync(join(dirName, "logs", fileName), logItem);
   } catch (error) {
     console.log(error);
   }
 };
+// path.join(path.dirname(url.fileURLToPath(import.meta.url)), "product.json"),
 
 export const logSuccess = (req, res, next) => {
   logEvents(`${req.method}\t${req.headers.origin}\t${req.url}`, "log-success.log");

@@ -1,8 +1,6 @@
 import { Users } from "./models.js";
 import { genSalt, hash } from "bcrypt";
 
-// read user ada di auth signup
-
 export const readUsers = async (req, res) => {
   try {
     const data = await Users.find().select(["-password", "-__v"]);

@@ -3,7 +3,7 @@ import { Users } from "./models.js";
 const ats = process.env.ACCESS_TOKEN_SECRET;
 
 export const isLogin = (req, res, next) => {
-  const token = req.cookies.accessToken;
+  const token = req.cookies.accessTokenV3;
   if (!token) return res.status(401).json({ error: `unauthorized, your not logged in` });
   jwt.verify(token, ats, async (error, decoded) => {
     if (error) return res.status(403).json({ error: `forbidden: token invalid` });
