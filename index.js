@@ -82,7 +82,7 @@ app.all("/*", (req, res) => {
 app.use(logError);
 
 db.then(() => {
-  app.listen(port, () => console.log(`connect to mongodb and running on http//localhost:${port}`));
+  app.listen(port, () => console.log(`connect to mongodb and running on http://localhost:${port}`));
 }).catch((err) => console.log(err));
 
 // mongoose.connection.once("open", () => {

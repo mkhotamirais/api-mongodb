@@ -10,11 +10,11 @@ router.post("/signup", signup);
 router.patch("/signin", signin);
 
 // products
+router.use(isLogin);
 router.route("/product").get(readProducts).post(createProduct);
 router.route("/product/:id").get(readProductById).patch(updateProduct).delete(deleteProduct);
 
 // me
-router.use(isLogin);
 router.route("/me").get(getMe).patch(updateMe).delete(deleteMe);
 router.patch("/signout", signout);
 

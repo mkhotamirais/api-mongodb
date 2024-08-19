@@ -43,6 +43,8 @@ export const updateUser = async (req, res) => {
       const salt = await genSalt(10);
       const hashPass = await hash(password, salt);
       req.body.password = hashPass;
+    } else {
+      req.body.password = data.password;
     }
 
     await Users.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
@@ -59,6 +61,7 @@ export const deleteUser = async (req, res) => {
     const data = await Users.findById(id);
     if (!data) return res.status(400).json({ error: `Data id ${id} not found!` });
     if (data.role === "admin") return res.status(400).json({ error: `Admin role cannot be deleted!` });
+    if (data.email === "ahmad@gmail.com") return res.status(400).json({ error: `The primary admin cannot be deleted` });
     await Users.findByIdAndDelete(id);
     res.status(200).json({ message: `Delete ${data.name} success` });
   } catch (error) {

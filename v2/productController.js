@@ -18,7 +18,7 @@ export const createProduct = async (req, res) => {
 
 export const readProducts = async (req, res) => {
   try {
-    let { skip = 0, limit = 10, q = "", sort = "name" } = req.query;
+    let { skip = 0, limit = 10, q = "", sort = "-createdAt" } = req.query;
     let criteria = {};
     if (q.length) criteria = { ...criteria, name: { $regex: `${q}`, $options: "i" } };
     const data = await Products.find(criteria).sort(sort).select("-__v").skip(parseInt(skip)).limit(parseInt(limit));

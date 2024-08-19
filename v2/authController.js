@@ -27,6 +27,7 @@ export const signup = async (req, res) => {
     await Users.create(req.body);
     res.status(201).json({ message: `Register ${name} success` });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -57,6 +58,7 @@ export const signin = async (req, res) => {
 
     res.status(200).json({ message: `Login ${email} success` });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -78,6 +80,7 @@ export const signout = async (req, res) => {
     await Users.findByIdAndUpdate(existingDataToken._id, { $pull: { accessToken } }, { new: true });
     res.status(200).json({ message: `Logout ${existingDataToken.name} success` });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -92,39 +95,52 @@ export const getMe = async (req, res) => {
     if (!existingDataToken) return res.status(403).json({ error: `forbidden, accessToken tidak valid` });
     res.status(200).json(existingDataToken);
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
 
 export const updateMe = async (req, res) => {
   try {
-    const existingDataToken = await User.findOne({
-      token: { $in: req.cookies.accessToken },
+    const existingDataToken = await Users.findOne({
+      accessToken: { $in: req.cookies.accessToken },
     });
-    if (!existingDataToken) return err(res, 403, `forbidden: token tidak valid`);
+    if (!existingDataToken) return res.status(403).json({ error: `forbidden: token tidak valid` });
+    if (existingDataToken.role !== "admin" && req.body.role === "admin")
+      return res.status(400).json({ error: `user cannot be an admin without admin permission` });
+    if (existingDataToken.email === "ahmad@gmail.com" && req.body.role === "user")
+      return res.status(400).json({ error: `You are primary admin you cannot be the user` });
+
     const { password, confPassword } = req.body;
     if (password) {
-      if (password !== confPassword) return err(res, 400, `confirm password wrong`);
+      if (password !== confPassword) return res.status.json({ error: `confirm password wrong` });
       const salt = await genSalt(10);
       req.body.password = await hash(password, salt);
+    } else {
+      req.body.password = existingDataToken.password;
     }
-    const data = await User.findByIdAndUpdate(existingDataToken._id, req.body, { new: true });
+    await Users.findByIdAndUpdate(existingDataToken._id, req.body, { new: true });
     res.status(200).json({ message: `Update your account success` });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
 
 export const deleteMe = async (req, res) => {
   try {
-    const existingDataToken = await User.findOne({
-      token: { $in: req.cookies.accessToken },
+    const existingDataToken = await Users.findOne({
+      accessToken: { $in: req.cookies.accessToken },
     });
-    if (!existingDataToken) return err(res, 403, `forbidden: token tidak valid`);
-    if (existingDataToken.role === "admin") return err(res, 400, `role admin cannot deleted, change role first`);
-    const data = await User.findByIdAndDelete(existingDataToken._id);
+    if (!existingDataToken) return res.status(403).json({ error: `forbidden: token tidak valid` });
+    if (existingDataToken.role === "admin")
+      return res.status(400).json({ error: `role admin cannot deleted, change role first` });
+    if (existingDataToken === "ahmad@gmail.com")
+      return res.status(400).json({ error: `The primary admin cannot be deleted` });
+    await Users.findByIdAndDelete(existingDataToken._id);
     res.status(200).json({ message: `Delete your account success` });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
