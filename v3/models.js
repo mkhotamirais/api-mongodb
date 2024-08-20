@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     description: { type: String },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "b3Users" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "v3Users" },
   },
   {
     timestamps: true,

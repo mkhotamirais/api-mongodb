@@ -31,7 +31,7 @@ export const readProductById = async (req, res) => {
       .populate({ path: "tag", select: ["name"] })
       .populate({ path: "user", select: ["username"] });
     if (!data) return res.status(404).json({ error: `Data ${id} not found!` });
-    res.status(200).json(count);
+    res.status(200).json(data);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -74,8 +74,8 @@ export const updateProduct = async (req, res) => {
     const dupName = await Products.findOne({ name });
     if (dupName && dupName.name !== name) return res.status(409).json({ error: "Duplicate name!" });
 
-    await Products.findByIdAndUpdate(match._id, req.body, { new: true });
-    res.status(200).json({ message: `Update ${data.name} success` });
+    await Products.findByIdAndUpdate(id, req.body, { new: true });
+    res.status(200).json({ message: `Update ${name} success` });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
