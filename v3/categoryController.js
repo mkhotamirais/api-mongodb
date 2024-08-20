@@ -29,7 +29,7 @@ export const createCategory = async (req, res) => {
     const dupName = await Categories.findOne({ name });
     if (dupName) return res.status(409).json({ error: `Duplicate name!` });
     await Categories.create(req.body);
-    res.status(200).json({ message: `Post ${data.name} success` });
+    res.status(200).json({ message: `Post ${name} success` });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -59,7 +59,7 @@ export const deleteCategory = async (req, res) => {
     const data = await Categories.findById(id);
     if (!data) return res.json(400).json({ error: `Category id ${id} not found!` });
     await Categories.findByIdAndDelete(id);
-    res.status(200).json({ message: `Delete ${name} success` });
+    res.status(200).json({ message: `Delete ${data.name} success` });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const kamusSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
-    meaning: { type: String, required: true },
+    description: { type: String, required: true },
     reference: [{ refName: { type: String }, refLink: { type: String } }],
   },
   {

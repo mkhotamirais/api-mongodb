@@ -1,6 +1,6 @@
 import { Kamuss } from "./models.js";
 
-export const getKamus = async (req, res) => {
+export const readKamus = async (req, res) => {
   try {
     let { skip = 0, limit = 10, q = "", sort = "-createdAt" } = req.query;
     let criteria = {};
@@ -13,7 +13,7 @@ export const getKamus = async (req, res) => {
   }
 };
 
-export const getKamusById = async (req, res) => {
+export const readKamusById = async (req, res) => {
   const { id } = req.params;
   try {
     const data = await Kamuss.findById(id);
@@ -25,7 +25,7 @@ export const getKamusById = async (req, res) => {
   }
 };
 
-export const postKamus = async (req, res) => {
+export const createKamus = async (req, res) => {
   const { name } = req.body;
   if (!name) return res.status(400).json({ error: `Name is required!` });
   try {
@@ -45,7 +45,7 @@ export const updateKamus = async (req, res) => {
   if (!name) return res.status(400).json({ error: `Name is required!` });
   try {
     const data = await Kamuss.findById(id);
-    if (!data) return res.status(400).json({ message: `Data id ${id} not found` });
+    if (!data) return res.status(400).json({ message: `Data id ${id} not found!` });
     const dupName = await Kamuss.findOne({ name });
     if (dupName && dupName.name !== name) return res.status(409).json({ error: "Duplicate name!" });
     await Kamuss.findByIdAndUpdate(id, req.body, { new: true });
@@ -59,10 +59,10 @@ export const updateKamus = async (req, res) => {
 export const deleteKamus = async (req, res) => {
   try {
     const { id } = req.params;
-    const match = await Kamuss.findById(id);
-    if (!match) return err(res, 400, `data id tidak ditemukan`);
-    const data = await Kamuss.findByIdAndDelete(match?._id);
-    ok(res, 200, `delete ${data.name} succes`, data);
+    const data = await Kamuss.findById(id);
+    if (!data) return res.status(400).json({ message: `Data id ${id} not found` });
+    await Kamuss.findByIdAndDelete(id);
+    res.status(200).json({ message: `Delete ${data.name} succes` });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
