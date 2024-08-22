@@ -20,8 +20,9 @@ const port = process.env.PORT || 3000;
 
 app.use(logSuccess);
 
-app.use(credentials); // --- built-in middleware
-app.use(cors(corsOptions)); // mw for 'content-type: application/x-www-form-urlencoded' / form data
+// app.use(credentials); // --- built-in middleware
+// app.use(cors(corsOptions)); // mw for 'content-type: application/x-www-form-urlencoded' / form data
+app.use(cors());
 app.use(express.json()); // mw for json
 app.use(express.static(path.join(dirName, "public"))); // mw for serve static file (ex: public)
 app.use(express.urlencoded({ extended: true })); // mw for cookies
