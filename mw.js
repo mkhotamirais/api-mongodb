@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { existsSync, mkdirSync, appendFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-
 import { allowedOrigins } from "./config/origins.js";
 
 export const credentials = (req, res, next) => {

@@ -7,4 +7,5 @@ export const allowedOrigins = [
   "https://tamivite.vercel.app",
   "https://tamiweb.vercel.app",
   "https://tamimern.vercel.app",
+  "https://google.com",
 ];
