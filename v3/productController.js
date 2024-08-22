@@ -15,7 +15,8 @@ export const readProducts = async (req, res) => {
       .sort(sort)
       .populate({ path: "category", select: "name" })
       .populate({ path: "tag", select: ["name"] })
-      .populate({ path: "user", select: ["username"] });
+      .populate({ path: "user", select: ["username"] })
+      .select("-__v");
     res.status(200).json(data);
   } catch (error) {
     console.log(error);

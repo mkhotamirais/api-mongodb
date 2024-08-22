@@ -17,7 +17,7 @@ export const createdProduct = async (req, res) => {
 
 export const readProducts = async (req, res) => {
   try {
-    const data = await Products.find();
+    const data = await Products.find().sort("-createdAt");
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
