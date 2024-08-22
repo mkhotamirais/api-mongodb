@@ -18,10 +18,10 @@ import v5Router from "./v5/router.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(logSuccess);
+// app.use(logSuccess);
 
-// app.use(credentials); // --- built-in middleware
-// app.use(cors(corsOptions)); // mw for 'content-type: application/x-www-form-urlencoded' / form data
+app.use(credentials); // --- built-in middleware
+app.use(cors(corsOptions)); // mw for 'content-type: application/x-www-form-urlencoded' / form data
 app.use(cors());
 app.use(express.json()); // mw for json
 app.use(express.static(path.join(dirName, "public"))); // mw for serve static file (ex: public)
@@ -86,7 +86,7 @@ app.all("/*", (req, res) => {
   else res.type("txt").send("404 Not Found");
 });
 
-app.use(logError);
+// app.use(logError);
 
 db.then(() => {
   app.listen(port, () => console.log(`connect to mongodb and running on http://localhost:${port}`));
