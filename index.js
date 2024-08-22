@@ -12,8 +12,8 @@ import v0Router from "./v0/router.js";
 import v1Router from "./v1/router.js";
 import v2Router from "./v2/router.js";
 import v3Router from "./v3/router.js";
-import v4Router from "./v4/router.js";
-import v5Router from "./v5/router.js";
+// import v4Router from "./v4/router.js";
+// import v5Router from "./v5/router.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,8 +52,8 @@ app.use("/v0", v0Router);
 app.use("/v1", v1Router);
 app.use("/v2", v2Router);
 app.use("/v3", v3Router);
-app.use("/v4", v4Router);
-app.use("/v5", v5Router);
+// app.use("/v4", v4Router);
+// app.use("/v5", v5Router);
 
 // ------ route ------
 
